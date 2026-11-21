@@ -85,3 +85,15 @@ polycam_exports/
 *.zip
 *.tar.gz
 *.log
+
+# Logs, outputs, caches, and heavy raw data (keep raw data on Google Drive)
+logs/
+outputs/
+output_data/
+raw_scans/
+polycam_exports/
+*.mp4
+*.mov
+*.zip
+*.tar.gz
+*.log
