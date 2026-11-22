@@ -1,0 +1,49 @@
+# Object metadata for Phase E (USD conversion & PhysX simulation)
+# Masses are in kilograms (kg). Update with measured values if weighed.
+# Recommended PhysX settings for nested SDF cups:
+#   dt=1/120, solver_position_iteration_count=16, contact_offset=0.002
+objects:
+  bowl:
+    visual_mesh: meshes/visual/bowl/bowl.obj
+    collision_mesh: meshes/collision/bowl_coll.obj
+    collision_type: coacd
+    usd_collision_approx: convexDecomposition
+    max_convex_hulls: 12
+    mass: 0.25
+
+  box:
+    visual_mesh: meshes/visual/box/box.obj
+    collision_mesh: meshes/collision/box_coll.obj
+    collision_type: box
+    usd_collision_approx: boundingCube
+    mass: 0.03
+
+  glass1:
+    visual_mesh: meshes/visual/glass1/glass1.obj
+    collision_mesh: meshes/collision/glass1_coll.obj
+    collision_type: frustum
+    usd_collision_approx: sdf
+    mass: 0.15
+
+  glass2:
+    visual_mesh: meshes/visual/glass2/glass2.obj
+    collision_mesh: meshes/collision/glass2_coll.obj
+    collision_type: frustum
+    usd_collision_approx: sdf
+    mass: 0.15
+
+  mug:
+    visual_mesh: meshes/visual/mug/mug.obj
+    collision_mesh: meshes/collision/mug_coll.obj
+    collision_type: coacd
+    usd_collision_approx: convexDecomposition
+    max_convex_hulls: 12
+    mass: 0.30
+
+  mug_rack:
+    visual_mesh: meshes/visual/mug_rack/mug_rack.obj
+    collision_mesh: meshes/collision/mug_rack_coll.obj
+    collision_type: coacd
+    usd_collision_approx: convexDecomposition
+    max_convex_hulls: 12
+    mass: 0.50
