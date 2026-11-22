@@ -109,3 +109,6 @@ polycam_exports/
 *.zip
 *.tar.gz
 *.log
+
+# Generated locally via scripts/tools/convert_all_to_usd.py
+meshes/usd/
