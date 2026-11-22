@@ -45,3 +45,8 @@ cd IsaacLab
    - *Fix:* `conda install -c conda-forge "libxml2=2.13.*" -y` and export `LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH`.
 6. **GUI viewport segfault (`librtx.scenedb.plugin.so`) on TITAN RTX + Ubuntu 26.04:**
    - *Fix:* Run simulations with `--headless`. For `scripts/tools/replay_demos.py --headless`, guarded `Se3Keyboard` creation and `teleop_interface.reset()` with `if not args_cli.headless:` / `if teleop_interface is not None:`.
+
+## Final Fixes: Driver 580 & tensordict
+- **RTX renderer / GUI crash (`librtx.scenedb.plugin.so`):** Caused by NVIDIA Driver `595.99.02` incompatibility with Isaac Sim 5.1.0. Fixed by downgrading to `nvidia-driver-580-open` (`580.178.04`) and disabling Secure Boot in BIOS so the DKMS module loads on Kernel `7.0.0-43-generic`. Both GUI mode and `--headless --enable_cameras --video` now work.
+- **`rsl_rl` / `tensordict` import error (`cannot import name 'is_structseq_instance'`):** Fixed by pinning `pip install --no-deps tensordict==0.9.1` to match `torch==2.7.0+cu128`.
+- **Silence `libtinfo.so.6` bash warning:** Append `$CONDA_PREFIX/lib` to the end of `LD_LIBRARY_PATH` (`export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$CONDA_PREFIX/lib`) in `$CONDA_PREFIX/etc/conda/activate.d/libxml2.sh`.
