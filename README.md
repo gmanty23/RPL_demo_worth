@@ -1,135 +1,130 @@
-# Template for Isaac Lab Projects
+# RPL Demo Worth — Isaac Lab Project & Custom Assets
 
-## Overview
+Isaac Lab extension and custom scanned object assets (`bowl`, `box`, `glass1`, `glass2`, `mug`, `mug_rack`) normalized for simulation (**meters scale, Z-up, bottom-centered origin at `(0, 0, 0)`**).
 
-This project/repository serves as a template for building projects or extensions based on Isaac Lab.
-It allows you to develop in an isolated environment, outside of the core Isaac Lab repository.
+## Repository Layout
 
-**Key Features:**
+* `objects.yaml` — Source of truth for all 6 objects (mesh paths, collision types, USD approximations, and masses).
+* `meshes/visual/<name>/` — Normalized visual `.obj`, `.mtl`, and `.jpg` textures (tracked with Git LFS).
+* `meshes/collision/<name>_coll.obj` — Pre-computed collision meshes (box primitive, CoACD convex hulls, and thin-walled frustums).
+* `meshes/usd/` — Generated locally (ignored by Git to keep the repo lightweight). Contains paired `render/<name>/<name>.usd` and `physics/<name>/<name>.usd` files.
+* `scripts/tools/` — Utilities for collision generation, batch USD conversion, compound glass USD generation, alignment auditing, and physics testing.
+* `source/rpl_demo_worth/` — Isaac Lab Python extension package.
 
-- `Isolation` Work outside the core Isaac Lab repository, ensuring that your development efforts remain self-contained.
-- `Flexibility` This template is set up to allow your code to be run as an extension in Omniverse.
+---
 
-**Keywords:** extension, template, isaaclab
+## Quickstart for Teammates
 
-## Installation
+### 1. Install Isaac Lab
+Install Isaac Lab by following the [official installation guide](https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html) (conda or `uv` recommended).
 
-- Install Isaac Lab by following the [installation guide](https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html).
-  We recommend using the conda or uv installation as it simplifies calling Python scripts from the terminal.
+### 2. Clone the repository (with Git LFS)
+Large mesh and texture files are stored in Git LFS. Clone outside the `IsaacLab` directory:
 
-- Clone or copy this project/repository separately from the Isaac Lab installation (i.e. outside the `IsaacLab` directory):
+```bash
+git lfs install
+git clone https://github.com/gmanty23/RPL_demo_worth.git
+cd RPL_demo_worth
+```
 
-- Using a python interpreter that has Isaac Lab installed, install the library in editable mode using:
+*(If you already cloned without LFS, run `git lfs pull` inside the repo.)*
 
-    ```bash
-    # use 'PATH_TO_isaaclab.sh|bat -p' instead of 'python' if Isaac Lab is not installed in Python venv or conda
-    python -m pip install -e source/rpl_demo_worth
+### 3. Install the extension in editable mode
+Using the Python environment where Isaac Lab is installed:
 
-- Verify that the extension is correctly installed by:
+```bash
+conda activate env_isaaclab
+python -m pip install -e source/rpl_demo_worth
+```
 
-    - Listing the available tasks:
+### 4. Generate all USD assets locally
+Because `.usd` files are excluded from Git, run the batch converter once (~2 minutes total):
 
-        Note: It the task name changes, it may be necessary to update the search pattern `"Template-"`
-        (in the `scripts/list_envs.py` file) so that it can be listed.
+```bash
+# Optional: set ISAACLAB_PATH if your IsaacLab repo is not at ~/repos/IsaacLab
+# export ISAACLAB_PATH=/path/to/your/IsaacLab
 
-        ```bash
-        # use 'FULL_PATH_TO_isaaclab.sh|bat -p' instead of 'python' if Isaac Lab is not installed in Python venv or conda
-        python scripts/list_envs.py
-        ```
+python scripts/tools/convert_all_to_usd.py
+```
 
-    - Running a task:
+This automatically builds both `meshes/usd/render/<name>/<name>.usd` (visuals, no collision) and `meshes/usd/physics/<name>/<name>.usd` (collision + mass, including the 17-hull compound rigid bodies for `glass1` and `glass2`).
 
-        ```bash
-        # use 'FULL_PATH_TO_isaaclab.sh|bat -p' instead of 'python' if Isaac Lab is not installed in Python venv or conda
-        python scripts/<RL_LIBRARY>/train.py --task=<TASK_NAME>
-        ```
+### 5. Verify assets & physics (optional)
+```bash
+# Check that Render and Physics USDs match in size, origin, and mass
+~/repos/IsaacLab/isaaclab.sh -p scripts/tools/check_usd_alignment.py
 
-    - Running a task with dummy agents:
+# Visual side-by-side comparison in Isaac Sim GUI
+~/repos/IsaacLab/isaaclab.sh -p scripts/tools/test_phase_e.py --mode compare
 
-        These include dummy agents that output zero or random agents. They are useful to ensure that the environments are configured correctly.
+# Tabletop drop stability test (all 6 objects)
+~/repos/IsaacLab/isaaclab.sh -p scripts/tools/test_phase_e.py --mode drop
 
-        - Zero-action agent
+# Clearance & nesting test (box -> bowl, glass1 -> glass2)
+~/repos/IsaacLab/isaaclab.sh -p scripts/tools/test_phase_e.py --mode nest
+```
 
-            ```bash
-            # use 'FULL_PATH_TO_isaaclab.sh|bat -p' instead of 'python' if Isaac Lab is not installed in Python venv or conda
-            python scripts/zero_agent.py --task=<TASK_NAME>
-            ```
-        - Random-action agent
+---
 
-            ```bash
-            # use 'FULL_PATH_TO_isaaclab.sh|bat -p' instead of 'python' if Isaac Lab is not installed in Python venv or conda
-            python scripts/random_agent.py --task=<TASK_NAME>
-            ```
+## Asset Summary
 
-### Set up IDE (Optional)
+| Object | Mass (kg) | Collision Mesh | USD Collision Approx | Notes |
+| :--- | :---: | :--- | :--- | :--- |
+| `bowl` | 0.25 | CoACD (12 hulls) | `convexDecomposition` | Open interior cavity |
+| `box` | 0.03 | Box primitive | `boundingCube` | Fits inside `bowl` |
+| `glass1` | 0.15 | Compound frustum (17 hulls) | `compoundConvexHull` | Nests cleanly inside `glass2` (zero jitter) |
+| `glass2` | 0.15 | Compound frustum (17 hulls) | `compoundConvexHull` | Receives `glass1` (zero jitter) |
+| `mug` | 0.30 | CoACD (12 hulls) | `convexDecomposition` | Open cavity & handle loop |
+| `mug_rack` | 0.50 | CoACD (12 hulls) | `convexDecomposition` | Angled pegs preserved |
 
-To setup the IDE, please follow these instructions:
+## Recommended PhysX Settings (for Task Configs)
 
-- Run VSCode Tasks, by pressing `Ctrl+Shift+P`, selecting `Tasks: Run Task` and running the `setup_python_env` in the drop down menu.
-  When running this task, you will be prompted to add the absolute path to your Isaac Sim installation.
+Use these simulation and rigid-body settings in your Isaac Lab environment config for stable grasping and cup nesting:
 
-If everything executes correctly, it should create a file .python.env in the `.vscode` directory.
-The file contains the python paths to all the extensions provided by Isaac Sim and Omniverse.
-This helps in indexing all the python modules for intelligent suggestions while writing code.
+* **Physics timestep:** `dt = 1.0 / 120.0` (120 Hz)
+* **PhysX stabilization:** `enable_stabilization = True`
+* **Solver iterations:** `solver_position_iteration_count = 16`, `solver_velocity_iteration_count = 2`
+* **Collision offset:** `contact_offset = 0.002` (2 mm), `rest_offset = 0.0`
+* **Damping / Sleep:** `linear_damping = 0.5`, `angular_damping = 0.5`, `sleep_threshold = 0.01`, `stabilization_threshold = 0.01`
 
-### Setup as Omniverse Extension (Optional)
+---
 
-We provide an example UI extension that will load upon enabling your extension defined in `source/rpl_demo_worth/rpl_demo_worth/ui_extension_example.py`.
+## Running Isaac Lab Tasks
 
-To enable your extension, follow these steps:
+* **List available tasks:**
+  ```bash
+  python scripts/list_envs.py
+  ```
+* **Train a task:**
+  ```bash
+  python scripts/<RL_LIBRARY>/train.py --task=<TASK_NAME>
+  ```
+* **Run with dummy agents:**
+  ```bash
+  python scripts/zero_agent.py --task=<TASK_NAME>
+  python scripts/random_agent.py --task=<TASK_NAME>
+  ```
 
-1. **Add the search path of this project/repository** to the extension manager:
-    - Navigate to the extension manager using `Window` -> `Extensions`.
-    - Click on the **Hamburger Icon**, then go to `Settings`.
-    - In the `Extension Search Paths`, enter the absolute path to the `source` directory of this project/repository.
-    - If not already present, in the `Extension Search Paths`, enter the path that leads to Isaac Lab's extension directory directory (`IsaacLab/source`)
-    - Click on the **Hamburger Icon**, then click `Refresh`.
+---
 
-2. **Search and enable your extension**:
-    - Find your extension under the `Third Party` category.
-    - Toggle it to enable your extension.
+## Set up IDE (Optional)
 
-## Code formatting
+Run VSCode Tasks by pressing `Ctrl+Shift+P`, selecting `Tasks: Run Task`, and running `setup_python_env`. When prompted, enter the absolute path to your Isaac Sim installation. This creates `.vscode/.python.env` for module indexing and autocomplete.
 
-We have a pre-commit template to automatically format your code.
-To install pre-commit:
+## Setup as Omniverse Extension (Optional)
+
+1. Open `Window` -> `Extensions`, click the **Hamburger Icon** -> `Settings`.
+2. Add the absolute paths to this repository's `source` directory and `IsaacLab/source` under `Extension Search Paths`, then click `Refresh`.
+3. Search for your extension under the `Third Party` category and toggle it on.
+
+## Code Formatting
 
 ```bash
 pip install pre-commit
-```
-
-Then you can run pre-commit with:
-
-```bash
 pre-commit run --all-files
 ```
 
 ## Troubleshooting
 
-### Pylance Missing Indexing of Extensions
-
-In some VsCode versions, the indexing of part of the extensions is missing.
-In this case, add the path to your extension in `.vscode/settings.json` under the key `"python.analysis.extraPaths"`.
-
-```json
-{
-    "python.analysis.extraPaths": [
-        "<path-to-ext-repo>/source/rpl_demo_worth"
-    ]
-}
-```
-
-### Pylance Crash
-
-If you encounter a crash in `pylance`, it is probable that too many files are indexed and you run out of memory.
-A possible solution is to exclude some of omniverse packages that are not used in your project.
-To do so, modify `.vscode/settings.json` and comment out packages under the key `"python.analysis.extraPaths"`
-Some examples of packages that can likely be excluded are:
-
-```json
-"<path-to-isaac-sim>/extscache/omni.anim.*"         // Animation packages
-"<path-to-isaac-sim>/extscache/omni.kit.*"          // Kit UI tools
-"<path-to-isaac-sim>/extscache/omni.graph.*"        // Graph UI tools
-"<path-to-isaac-sim>/extscache/omni.services.*"     // Services tools
-...
-```
+* **Pylance missing indexing:** Add `"<path-to-ext-repo>/source/rpl_demo_worth"` to `"python.analysis.extraPaths"` in `.vscode/settings.json`.
+* **Pylance crash (out of memory):** Comment out unused Omniverse packages (`omni.anim.*`, `omni.kit.*`, `omni.graph.*`, `omni.services.*`) under `"python.analysis.extraPaths"` in `.vscode/settings.json`.

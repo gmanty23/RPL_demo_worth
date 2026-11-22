@@ -1,6 +1,6 @@
 # Object metadata for Phase E (USD conversion & PhysX simulation)
 # Masses are in kilograms (kg). Update with measured values if weighed.
-# Recommended PhysX settings for nested SDF cups:
+# Recommended PhysX settings for manipulation & nested cups:
 #   dt=1/120, solver_position_iteration_count=16, contact_offset=0.002
 objects:
   bowl:
@@ -22,14 +22,14 @@ objects:
     visual_mesh: meshes/visual/glass1/glass1.obj
     collision_mesh: meshes/collision/glass1_coll.obj
     collision_type: frustum
-    usd_collision_approx: sdf
+    usd_collision_approx: compoundConvexHull
     mass: 0.15
 
   glass2:
     visual_mesh: meshes/visual/glass2/glass2.obj
     collision_mesh: meshes/collision/glass2_coll.obj
     collision_type: frustum
-    usd_collision_approx: sdf
+    usd_collision_approx: compoundConvexHull
     mass: 0.15
 
   mug:
