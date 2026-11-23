@@ -154,6 +154,10 @@ python scripts/zero_agent.py --task=RPL-BlockInBowl-Render-v0 --enable_cameras
 python scripts/random_agent.py --task=RPL-BlockInBowl-Render-v0 --enable_cameras
 ```
 
+### Verification & Teleop Status
+- **Automated G1 Suite (`scripts/test_success.py`):** Verified across 50 resets + 10 random-action episodes per task (`0` spawn overlaps, `0%` null-policy false positives, `100%` cheat-policy success, and `0` physics explosions or table fall-throughs).
+- **Teleop & Demo Recording (G2):** **Untested** (no SpaceMouse available on the development workstation). `teleop_se3_agent.py`, `record_demos.py`, and `replay_demos.py` should be validated by the teleop/data team.
+
 ---
 
 ## Known Issues & Fixes
