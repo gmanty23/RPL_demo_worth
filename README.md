@@ -139,7 +139,7 @@ Each task provides a **Physics** copy (`-v0`) and a **Render** twin (`-Render-v0
 | :---: | :---: | :---: |
 | ![Block in Bowl](docs/images/block_in_bowl.png) | ![Mug on Rack](docs/images/mug_on_rack.png) | ![Cup in Cup](docs/images/cup_in_cup.png) |
 
-All tasks share a Franka Panda arm (relative Differential IK), `table_cam`, and `wrist_cam` defined in `source/rpl_demo_worth/rpl_demo_worth/tasks/manager_based/common/base_env_cfg.py`.
+All tasks share a Franka Panda arm (relative Differential IK), `table_cam`, and `wrist_cam` defined in `source/rpl_demo_worth/rpl_demo_worth/tasks/manager_based/common/base_env_cfg.py`. Both cameras default to `128x128` (RGB + depth) to keep VRAM/RAM usage low; to increase resolution for policy training (e.g., `224x224` or `256x256`), update `width` and `height` on `table_cam` and `wrist_cam` in `base_env_cfg.py`.
 
 > **Camera flag required:** Because `table_cam` and `wrist_cam` are spawned in every scene, always pass `--enable_cameras` when launching a task.
 
