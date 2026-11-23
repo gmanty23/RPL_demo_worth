@@ -26,7 +26,7 @@ Do not commit Isaac Sim or Isaac Lab to this repository. Install them locally us
 * `objects.yaml` — Source of truth for all 6 objects (mesh paths, collision types, USD approximations, and masses).
 * `meshes/visual/<name>/` — Normalized visual `.obj`, `.mtl`, and `.jpg` textures (tracked with Git LFS).
 * `meshes/collision/<name>_coll.obj` — Pre-computed collision meshes (box primitive, CoACD convex hulls, and thin-walled frustums).
-* `meshes/usd/` — Generated locally (ignored by Git to keep the repo lightweight). Contains paired `render/<name>/<name>.usd` and `physics/<name>/<name>.usd` files.
+* `meshes/usd/` — Generated locally (ignored by Git to keep the repo lightweight). Contains `render/<name>/<name>.usd`, `physics/<name>/<name>.usd`, and combined `render_sim/<name>/<name>.usd` twins.
 * `scripts/tools/` — Utilities for collision generation, batch USD conversion, compound glass USD generation, alignment auditing, and physics testing.
 * `source/rpl_demo_worth/` — Isaac Lab Python extension package.
 
@@ -76,6 +76,7 @@ conda activate env_isaaclab
 # export ISAACLAB_PATH=/path/to/your/IsaacLab
 
 python scripts/tools/convert_all_to_usd.py
+~/repos/IsaacLab/isaaclab.sh -p scripts/tools/build_render_twin_usds.py
 ```
 
 This builds both `meshes/usd/render/<name>/<name>.usd` (visuals, no collision) and `meshes/usd/physics/<name>/<name>.usd` (collision + mass, including the 17-hull compound rigid bodies for `glass1` and `glass2`).
@@ -121,13 +122,33 @@ python scripts/list_envs.py
 
 ---
 
-## Running Isaac Lab Tasks
+## Registered Isaac Lab Tasks
+
+Each task provides a **Physics** copy (`-v0`) and a **Render** twin (`-Render-v0`) that combines high-fidelity visual meshes with simplified physics colliders:
+
+| Task | Physics Env ID | Render Twin Env ID |
+| :--- | :--- | :--- |
+| **Block in Bowl** | `RPL-BlockInBowl-v0` | `RPL-BlockInBowl-Render-v0` |
+| **Mug on Rack** | `RPL-MugOnRack-v0` | `RPL-MugOnRack-Render-v0` |
+| **Cup in Cup** | `RPL-CupInCup-v0` | `RPL-CupInCup-Render-v0` |
+
+| Block in Bowl | Mug on Rack | Cup in Cup |
+| :---: | :---: | :---: |
+| ![Block in Bowl](docs/images/block_in_bowl.png) | ![Mug on Rack](docs/images/mug_on_rack.png) | ![Cup in Cup](docs/images/cup_in_cup.png) |
+
+All tasks share a Franka Panda arm (relative Differential IK), `table_cam`, and `wrist_cam` defined in `source/rpl_demo_worth/rpl_demo_worth/tasks/manager_based/common/base_env_cfg.py`.
+
+> **Camera flag required:** Because `table_cam` and `wrist_cam` are spawned in every scene, always pass `--enable_cameras` when launching a task.
 
 ```bash
-python scripts/list_envs.py
-python scripts/<RL_LIBRARY>/train.py --task=<TASK_NAME>
-python scripts/zero_agent.py --task=<TASK_NAME>
-python scripts/random_agent.py --task=<TASK_NAME>
+# Verify physics, success/failure terminations, and camera snapshots (outputs/cam_check/)
+~/repos/IsaacLab/isaaclab.sh -p scripts/tools/test_block_in_bowl.py --task RPL-BlockInBowl-Render-v0
+~/repos/IsaacLab/isaaclab.sh -p scripts/tools/test_mug_on_rack.py --task RPL-MugOnRack-Render-v0
+~/repos/IsaacLab/isaaclab.sh -p scripts/tools/test_cup_in_cup.py --task RPL-CupInCup-Render-v0
+
+# Standard Isaac Lab entry points (pass --enable_cameras)
+python scripts/zero_agent.py --task=RPL-BlockInBowl-Render-v0 --enable_cameras
+python scripts/random_agent.py --task=RPL-BlockInBowl-Render-v0 --enable_cameras
 ```
 
 ---
@@ -159,30 +180,3 @@ python scripts/random_agent.py --task=<TASK_NAME>
 ### IDE & Formatting (Optional)
 * **VSCode indexing:** Press `Ctrl+Shift+P` -> `Tasks: Run Task` -> `setup_python_env` (creates `.vscode/.python.env`). If Pylance crashes from OOM, comment out unused `omni.*` packages in `.vscode/settings.json`.
 * **Pre-commit formatting:** `pip install pre-commit && pre-commit run --all-files`.
-
----
-
-## Registered Isaac Lab Tasks
-
-Each task provides a **Physics** copy (`-v0`) and a **Render** twin (`-Render-v0`) that combines high-fidelity visual meshes with simplified physics colliders:
-
-| Task | Physics Env ID | Render Twin Env ID |
-| :--- | :--- | :--- |
-| **Block in Bowl** | `RPL-BlockInBowl-v0` | `RPL-BlockInBowl-Render-v0` |
-| **Mug on Rack** | `RPL-MugOnRack-v0` | `RPL-MugOnRack-Render-v0` |
-| **Cup in Cup** | `RPL-CupInCup-v0` | `RPL-CupInCup-Render-v0` |
-
-### 1. Generate USD Assets (Required Once)
-Before launching any task, convert the meshes and build the render-sim twins:
-
-    ~/repos/IsaacLab/isaaclab.sh -p scripts/tools/convert_all_to_usd.py
-    ~/repos/IsaacLab/isaaclab.sh -p scripts/tools/build_render_twin_usds.py
-
-### 2. Cameras & Verification
-All tasks share a Franka Panda arm (relative Differential IK), `table_cam`, and `wrist_cam` defined in `source/rpl_demo_worth/rpl_demo_worth/tasks/manager_based/common/base_env_cfg.py`.
-
-Because cameras are spawned in the scene, always pass `--enable_cameras` when launching an environment. To verify physics, success/failure terminations, and camera snapshots (`outputs/cam_check/`):
-
-    ~/repos/IsaacLab/isaaclab.sh -p scripts/tools/test_block_in_bowl.py --task RPL-BlockInBowl-Render-v0
-    ~/repos/IsaacLab/isaaclab.sh -p scripts/tools/test_mug_on_rack.py --task RPL-MugOnRack-Render-v0
-    ~/repos/IsaacLab/isaaclab.sh -p scripts/tools/test_cup_in_cup.py --task RPL-CupInCup-Render-v0
