@@ -141,6 +141,10 @@ Each task provides a **Physics** copy (`-v0`) and a **Render** twin (`-Render-v0
 
 All tasks share a Franka Panda arm (relative Differential IK), `table_cam`, and `wrist_cam` defined in `source/rpl_demo_worth/rpl_demo_worth/tasks/manager_based/common/base_env_cfg.py`. Both cameras default to `128x128` (RGB + depth) to keep VRAM/RAM usage low; to increase resolution for policy training (e.g., `224x224` or `256x256`), update `width` and `height` on `table_cam` and `wrist_cam` in `base_env_cfg.py`.
 
+| Block in Bowl | Mug on Rack | Cup in Cup |
+| :---: | :---: | :---: |
+| https://github.com/user-attachments/assets/1a2a0c31-5d45-4f2f-af0e-1e80d8630b15 | https://github.com/user-attachments/assets/0f6b8b60-22ad-4fa6-9ee1-2d0b01fb4824 |  <https://github.com/user-attachments/assets/d5414309-4756-48ab-8459-7d8a30485b92> |
+
 <details>
 <summary><b>Watch Demo Videos (Table Cam)</b></summary>
 
