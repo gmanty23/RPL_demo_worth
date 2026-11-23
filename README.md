@@ -159,3 +159,30 @@ python scripts/random_agent.py --task=<TASK_NAME>
 ### IDE & Formatting (Optional)
 * **VSCode indexing:** Press `Ctrl+Shift+P` -> `Tasks: Run Task` -> `setup_python_env` (creates `.vscode/.python.env`). If Pylance crashes from OOM, comment out unused `omni.*` packages in `.vscode/settings.json`.
 * **Pre-commit formatting:** `pip install pre-commit && pre-commit run --all-files`.
+
+---
+
+## Registered Isaac Lab Tasks
+
+Each task provides a **Physics** copy (`-v0`) and a **Render** twin (`-Render-v0`) that combines high-fidelity visual meshes with simplified physics colliders:
+
+| Task | Physics Env ID | Render Twin Env ID |
+| :--- | :--- | :--- |
+| **Block in Bowl** | `RPL-BlockInBowl-v0` | `RPL-BlockInBowl-Render-v0` |
+| **Mug on Rack** | `RPL-MugOnRack-v0` | `RPL-MugOnRack-Render-v0` |
+| **Cup in Cup** | `RPL-CupInCup-v0` | `RPL-CupInCup-Render-v0` |
+
+### 1. Generate USD Assets (Required Once)
+Before launching any task, convert the meshes and build the render-sim twins:
+
+    ~/repos/IsaacLab/isaaclab.sh -p scripts/tools/convert_all_to_usd.py
+    ~/repos/IsaacLab/isaaclab.sh -p scripts/tools/build_render_twin_usds.py
+
+### 2. Cameras & Verification
+All tasks share a Franka Panda arm (relative Differential IK), `table_cam`, and `wrist_cam` defined in `source/rpl_demo_worth/rpl_demo_worth/tasks/manager_based/common/base_env_cfg.py`.
+
+Because cameras are spawned in the scene, always pass `--enable_cameras` when launching an environment. To verify physics, success/failure terminations, and camera snapshots (`outputs/cam_check/`):
+
+    ~/repos/IsaacLab/isaaclab.sh -p scripts/tools/test_block_in_bowl.py --task RPL-BlockInBowl-Render-v0
+    ~/repos/IsaacLab/isaaclab.sh -p scripts/tools/test_mug_on_rack.py --task RPL-MugOnRack-Render-v0
+    ~/repos/IsaacLab/isaaclab.sh -p scripts/tools/test_cup_in_cup.py --task RPL-CupInCup-Render-v0
