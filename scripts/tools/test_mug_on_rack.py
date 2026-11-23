@@ -64,9 +64,9 @@ def main():
     # 2. Place mug handle in peg zone (kinematic check over 5 steps)
     rack_pos = env.unwrapped.scene["mug_rack"].data.root_pos_w.clone()
     place_pose = torch.zeros((1, 7), device=env.unwrapped.device)
-    place_pose[:, 0] = rack_pos[:, 0] + 0.095  # so handle at -0.048 sits at r_xy = 0.047m
-    place_pose[:, 1] = rack_pos[:, 1]
-    place_pose[:, 2] = rack_pos[:, 2] + 0.16   # so handle at +0.060 sits at z = 0.22m
+    place_pose[:, 0] = rack_pos[:, 0] + 0.005  # so handle at +0.0421 sits at r_xy = 0.047m
+    place_pose[:, 1] = rack_pos[:, 1] - 0.009  # cancel +0.009 handle Y-offset
+    place_pose[:, 2] = rack_pos[:, 2] + 0.150  # so handle at +0.0712 sits at z = 0.221m
     place_pose[:, 3] = 1.0
 
     # Update sim state to place_pose with zero velocity and verify 5-step hold counter

@@ -36,14 +36,14 @@ objects:
     visual_mesh: meshes/visual/mug/mug.obj
     collision_mesh: meshes/collision/mug_coll.obj
     collision_type: coacd
-    usd_collision_approx: convexDecomposition
+    usd_collision_approx: compoundConvexHull
     max_convex_hulls: 12
-    mass: 0.30
+    mass: 0.20
 
   mug_rack:
     visual_mesh: meshes/visual/mug_rack/mug_rack.obj
     collision_mesh: meshes/collision/mug_rack_coll.obj
     collision_type: coacd
-    usd_collision_approx: convexDecomposition
+    usd_collision_approx: compoundConvexHull
     max_convex_hulls: 12
-    mass: 0.50
+    mass: 1.50

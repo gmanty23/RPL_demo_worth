@@ -8,7 +8,7 @@ def mug_on_rack_success(
     env: ManagerBasedRLEnv,
     mug_cfg: SceneEntityCfg = SceneEntityCfg("mug"),
     rack_cfg: SceneEntityCfg = SceneEntityCfg("mug_rack"),
-    handle_local_offset: tuple[float, float, float] = (-0.048, 0.0, 0.060),
+    handle_local_offset: tuple[float, float, float] = (0.0421, 0.009, 0.0712),
     peg_r_min: float = 0.015,
     peg_r_max: float = 0.095,
     peg_z_min: float = 0.090,

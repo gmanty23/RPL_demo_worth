@@ -65,6 +65,7 @@ def main():
     if needs_compound_glasses:
         print("\n>>> Building compound convex-hull Physics USDs for glass1 & glass2...")
         subprocess.run([str(ISAACLAB_SH), "-p", str(COMPOUND_GLASS_SCRIPT)], check=True)
+        subprocess.run([str(ISAACLAB_SH), "-p", str(REPO_ROOT / "scripts/tools/build_compound_mug_usds.py")], check=True)
 
     print("\nAll 12 USD files converted successfully.")
 

@@ -114,8 +114,8 @@ python scripts/list_envs.py
 | `box` | 0.03 | Box primitive | `boundingCube` | Fits inside `bowl` |
 | `glass1` | 0.15 | Compound frustum (17 hulls) | `compoundConvexHull` | Nests cleanly inside `glass2` (zero jitter) |
 | `glass2` | 0.15 | Compound frustum (17 hulls) | `compoundConvexHull` | Receives `glass1` (zero jitter) |
-| `mug` | 0.30 | CoACD (12 hulls) | `convexDecomposition` | Open cavity & handle loop (`map_Bump` removed from `mug.mtl` to avoid UV shadow seams) |
-| `mug_rack` | 0.50 | CoACD (12 hulls) | `convexDecomposition` | Angled pegs preserved |
+| `mug` | 0.20 | CoACD (12 hulls) | `compoundConvexHull` | Per-hull colliders preserve open handle loop (`map_Bump` removed from `mug.mtl` to avoid UV shadow seams) |
+| `mug_rack` | 2.50 | CoACD (12 hulls) | `compoundConvexHull` | Angled pegs preserved; weighted base CoM (`z=0.02 m`) & flattened planar collision base |
 
 **Recommended PhysX Settings (for Task Configs):**
 * `dt = 1.0 / 120.0` (120 Hz), `enable_stabilization = True`
@@ -137,7 +137,7 @@ Each task provides a **Physics** copy (`-v0`) and a **Render** twin (`-Render-v0
 
 | Block in Bowl | Mug on Rack | Cup in Cup |
 | :---: | :---: | :---: |
-| ![Block in Bowl](docs/images/block_in_bowl.png) | ![Mug on Rack](docs/images/mug_on_rack.png) | ![Cup in Cup](docs/images/cup_in_cup.png) |
+| ![Block in Bowl](docs/media/block_in_bowl_final.png) | ![Mug on Rack](docs/media/mug_on_rack_final.png) | ![Cup in Cup](docs/media/cup_in_cup_final.png) |
 
 All tasks share a Franka Panda arm (relative Differential IK), `table_cam`, and `wrist_cam` defined in `source/rpl_demo_worth/rpl_demo_worth/tasks/manager_based/common/base_env_cfg.py`. Both cameras default to `128x128` (RGB + depth) to keep VRAM/RAM usage low; to increase resolution for policy training (e.g., `224x224` or `256x256`), update `width` and `height` on `table_cam` and `wrist_cam` in `base_env_cfg.py`.
 

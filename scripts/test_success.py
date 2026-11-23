@@ -71,9 +71,9 @@ def run_cheat_policy(env, task_name: str, obj_name: str, target_name: str, zero_
 
     elif "MugOnRack" in task_name:
         # Place handle center in peg zone (kinematic hold check over 5 frames)
-        pose[:, 0] = target_pos[:, 0] + 0.095
-        pose[:, 1] = target_pos[:, 1]
-        pose[:, 2] = target_pos[:, 2] + 0.16
+        pose[:, 0] = target_pos[:, 0] + 0.005
+        pose[:, 1] = target_pos[:, 1] - 0.009
+        pose[:, 2] = target_pos[:, 2] + 0.150
         env.unwrapped.scene[obj_name].write_root_pose_to_sim(pose)
         env.unwrapped.scene[obj_name].write_root_velocity_to_sim(torch.zeros((1, 6), device=device))
         env.unwrapped.scene.update(dt=0.0)

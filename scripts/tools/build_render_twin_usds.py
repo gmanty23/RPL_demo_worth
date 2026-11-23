@@ -5,7 +5,7 @@ from isaaclab.app import AppLauncher
 app_launcher = AppLauncher(headless=True)
 simulation_app = app_launcher.app
 
-from pxr import Usd, UsdGeom, UsdPhysics
+from pxr import Gf, Usd, UsdGeom, UsdPhysics
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 
@@ -43,7 +43,10 @@ def build_twin(name: str, mass: float):
     root = UsdGeom.Xform.Define(stage, f"/{name}")
     stage.SetDefaultPrim(root.GetPrim())
     UsdPhysics.RigidBodyAPI.Apply(root.GetPrim())
-    UsdPhysics.MassAPI.Apply(root.GetPrim()).CreateMassAttr().Set(float(mass))
+    mass_api = UsdPhysics.MassAPI.Apply(root.GetPrim())
+    mass_api.CreateMassAttr().Set(float(mass))
+    if name == "mug_rack":
+        mass_api.CreateCenterOfMassAttr().Set(Gf.Vec3f(0.0, 0.0, 0.04))
 
     # 1. Visuals from Render USD (strip duplicate RigidBody + strip all collisions)
     vis = UsdGeom.Xform.Define(stage, f"/{name}/visual")
@@ -55,7 +58,10 @@ def build_twin(name: str, mass: float):
     coll = UsdGeom.Xform.Define(stage, f"/{name}/collision")
     coll.GetPrim().GetReferences().AddReference(str(phys_usd))
     strip_rigid_body_and_mass(coll.GetPrim())
-    UsdGeom.Imageable(coll.GetPrim()).CreatePurposeAttr(UsdGeom.Tokens.guide)
+    UsdGeom.Imageable(coll.GetPrim()).MakeInvisible()
+    for child in Usd.PrimRange(coll.GetPrim()):
+        if child.IsA(UsdGeom.Imageable):
+            UsdGeom.Imageable(child).MakeInvisible()
 
     stage.GetRootLayer().Save()
     print(f"[RENDER TWIN] Saved {out_usd.relative_to(REPO_ROOT)}")
