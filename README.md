@@ -145,19 +145,6 @@ All tasks share a Franka Panda arm (relative Differential IK), `table_cam`, and 
 | :---: | :---: | :---: |
 | https://github.com/user-attachments/assets/1a2a0c31-5d45-4f2f-af0e-1e80d8630b15 | https://github.com/user-attachments/assets/0f6b8b60-22ad-4fa6-9ee1-2d0b01fb4824 |  <https://github.com/user-attachments/assets/d5414309-4756-48ab-8459-7d8a30485b92> |
 
-<details>
-<summary><b>Watch Demo Videos (Table Cam)</b></summary>
-
-**Block in Bowl**
-<https://github.com/user-attachments/assets/1a2a0c31-5d45-4f2f-af0e-1e80d8630b15>
-
-**Mug on Rack**
-<https://github.com/user-attachments/assets/0f6b8b60-22ad-4fa6-9ee1-2d0b01fb4824>
-
-**Cup in Cup**
-<https://github.com/user-attachments/assets/d5414309-4756-48ab-8459-7d8a30485b92>
-
-</details>
 
 > **Camera flag required:** Because `table_cam` and `wrist_cam` are spawned in every scene, always pass `--enable_cameras` when launching a task.
 
