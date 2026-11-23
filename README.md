@@ -105,6 +105,9 @@ python scripts/list_envs.py
 
 ## Asset Summary & PhysX Settings
 
+![Render vs. Physics Collision Assets](docs/images/assets_compare.png)
+*Side-by-side comparison of textured Render USDs and simplified Physics collision USDs for all 6 objects.*
+
 | Object | Mass (kg) | Collision Mesh | USD Collision Approx | Notes |
 | :--- | :---: | :--- | :--- | :--- |
 | `bowl` | 0.25 | CoACD (12 hulls) | `convexDecomposition` | Open interior cavity |
