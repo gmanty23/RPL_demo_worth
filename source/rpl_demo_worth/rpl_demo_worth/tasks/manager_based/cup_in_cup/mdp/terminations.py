@@ -10,8 +10,8 @@ def cup_in_cup_success(
     xy_threshold: float = 0.020,     # horizontal alignment tolerance (2.0 cm)
     z_min: float = 0.016,            # nested base height lower bound
     z_max: float = 0.033,            # nested base height upper bound (below cup_b rim 9.76 cm)
-    max_lin_vel: float = 0.02,       # m/s
-    max_ang_vel: float = 0.50,       # rad/s
+    max_lin_vel: float = 0.10,       # m/s
+    max_ang_vel: float = 1.50,       # rad/s
     hold_steps: int = 5,
 ) -> torch.Tensor:
     """True when cup_a is nested inside cup_b, aligned horizontally, and both are at rest."""
